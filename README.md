@@ -1,1 +1,1 @@
-init
+GEEKLAB.NAGANO 1週年記念 (GEEKLAB.NAGANO 1周年イベント&&Pepperハッカソン 「Pepper長野初上陸！！」 - GEEKLAB.NAGANO | Doorkeeper https://glnagano.doorkeeper.jp/events/20330 ) のハッカソンで開発した成果です。Choregraphe suite で開発をしています。未完成のものもありますが、記念に公開しておきます。
