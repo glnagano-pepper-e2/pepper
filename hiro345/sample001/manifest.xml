@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<package uuid="sample001-e8fdc5">
+ <names>
+  <name lang="en_US">sample001</name>
+ </names>
+ <supportedLanguages>
+  <language>ja_JP</language>
+ </supportedLanguages>
+ <descriptionLanguages>
+  <language>en_US</language>
+  <language>ja_JP</language>
+ </descriptionLanguages>
+ <contents>
+  <behaviorContent path="behavior_1">
+   <nature>interactive</nature>
+   <permissions/>
+  </behaviorContent>
+ </contents>
+</package>
