@@ -48,8 +48,8 @@
         pass
 
     def onInput_onStart(self):
-        #self.onStopped() #activate the output of the box
         self.tts.say("Hello young Padawan")
+        self.onStopped() #activate the output of the box
         pass
 
     def onInput_onStop(self):
@@ -120,14 +120,15 @@ class MyClass(GeneratedClass):
         self.onStopped()
 
     def onInput_inputVoice(self, inputData):
-        if (inputData == "satou") :
-            inputURLData = "http://" + self.urlBase + "/a.html"
+        self.log("onInput_inputVoice")
+        if (inputData == "さとう") :
+            inputURLData = self.urlBase + "/a.html"
         elif (inputData == "tanaka") :
-            inputURLData = "http://" + self.urlBase + "/b.html"
+            inputURLData = self.urlBase + "/b.html"
         elif (inputData == "sasaki") :
-            inputURLData = "http://" + self.urlBase + "/c.html"
+            inputURLData = self.urlBase + "/c.html"
         elif (inputData == "yamazaki") :
-            inputURLData = "http://" + self.urlBase + "/d.html"
+            inputURLData = self.urlBase + "/d.html"
         if( self.bIsRunning ):
             return
 
@@ -267,7 +268,7 @@ class MyClass(GeneratedClass):
                                                 <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
                                                 <Output name="wordRecognized" type="3" type_size="1" nature="2" inner="0" tooltip="Word recognized with a confidence higher than the threshold set in the box parameters." id="5" />
                                                 <Output name="onNothing" type="1" type_size="1" nature="2" inner="0" tooltip="Nothing has been understood." id="6" />
-                                                <Parameter name="Word list" inherits_from_parent="0" content_type="3" value="yes;no" default_value="yes;no" custom_choice="0" tooltip="Try to recognize a word from a list of words set in the box parameters." id="7" />
+                                                <Parameter name="Word list" inherits_from_parent="0" content_type="3" value="yes;no;さとう;" default_value="yes;no" custom_choice="0" tooltip="Try to recognize a word from a list of words set in the box parameters." id="7" />
                                                 <Parameter name="Confidence threshold (%)" inherits_from_parent="0" content_type="1" value="30" default_value="30" min="0" max="100" tooltip="If the confidence associated with the word recognized is below this threshold, the robot will consider that it is not recognized." id="8" />
                                                 <Parameter name="Visual expression" inherits_from_parent="0" content_type="0" value="1" default_value="1" tooltip="Use the LEDs to show feedbacks from the robot during the recognition.&#x0A;&#x0A;For example:&#x0A;- Eyes leds get blue and turn when the speech recognition is launched.&#x0A;- They get yellow when the robot hears someone talking and analyses what it heard.&#x0A;- They flash in green when the robot understood and flash in red otherwise." id="9" />
                                                 <Parameter name="Enable word spotting" inherits_from_parent="0" content_type="0" value="0" default_value="0" tooltip="If this option is not activated the robot will only understand exact expressions. If it is, he will spot the exact expressions even in the middle of a sentence.&#x0A;&#x0A;!!Warning!! This option is only available with the speech recognition module using Nuance (ie in Atom version of the robot)." id="10" />
@@ -925,8 +926,79 @@ class MyClass(GeneratedClass):
                                                 </Timeline>
                                                 <Resource name="Speech" type="Lock" timeout="0" />
                                             </Box>
+                                            <Box name="Set Language" id="8" localization="8" tooltip="Select the language you would like the robot to speak and understand. Any following call to&#x0A;ALSpeechRecognition (Speech Reco. box for instance) or ALTextToSpeech (Say box&#x0A;for instance) will use this language." x="77" y="399">
+                                                <bitmap>media/images/box/interaction/say.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        try:
+            self.tts = ALProxy("ALTextToSpeech")
+        except:
+            self.logger.warn("ALTextToSpeech is not available, language setting cannot be applied to speech")
+            self.tts = None
+
+        try:
+            self.asr = ALProxy("ALSpeechRecognition")
+        except:
+            self.logger.warn("ALSpeechRecognition is not available, language setting cannot be applied to recognition")
+            self.asr = None
+
+        try:
+            self.dialog = ALProxy("ALDialog")
+        except:
+            self.logger.warn("ALDialog is not available, language setting cannot be applied to dialog")
+            self.dialog = None
+
+    def onInput_onSet(self):
+        lang = self.getParameter("Language")
+        try:
+            if self.asr:
+                self.asr.setLanguage( self.getParameter("Language") )
+            if self.tts:
+                self.tts.setLanguage( self.getParameter("Language") )
+            if self.dialog:
+                self.dialog.setLanguage( self.getParameter("Language") )
+            if self.tts is None and self.asr is None and self.dialog is None:
+                raise RuntimeError("Cannot set language: neither ALTextToSpeech nor ALSpeechRecognition nor ALDialog is available.")
+            self.onReady()
+        except:
+            error = "Language " + lang + " cannot be set."
+            self.logger.warn(error)
+            self.onError(error)]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onSet" type="1" type_size="1" nature="1" inner="0" tooltip="The data is set when a signal is received on this input." id="2" />
+                                                <Output name="onReady" type="1" type_size="1" nature="2" inner="0" tooltip="Signal sent when the data has been set." id="3" />
+                                                <Output name="onError" type="3" type_size="1" nature="2" inner="0" tooltip="Error output:&#x0A;- triggered if the language asked cannot be set" id="4" />
+                                                <Parameter name="Language" inherits_from_parent="0" content_type="3" value="Japanese" default_value="English" custom_choice="1" tooltip="Set the language the robot speaks and understands." id="5">
+                                                    <Choice value="Arabic" />
+                                                    <Choice value="Brazilian" />
+                                                    <Choice value="Chinese" />
+                                                    <Choice value="Czech" />
+                                                    <Choice value="Danish" />
+                                                    <Choice value="Dutch" />
+                                                    <Choice value="English" />
+                                                    <Choice value="Finnish" />
+                                                    <Choice value="French" />
+                                                    <Choice value="German" />
+                                                    <Choice value="Italian" />
+                                                    <Choice value="Japanese" />
+                                                    <Choice value="Korean" />
+                                                    <Choice value="Polish" />
+                                                    <Choice value="Portuguese" />
+                                                    <Choice value="Russian" />
+                                                    <Choice value="Spanish" />
+                                                    <Choice value="Swedish" />
+                                                    <Choice value="Turkish" />
+                                                </Parameter>
+                                                <Resource name="Speech" type="Lock" timeout="0" />
+                                            </Box>
                                             <Link inputowner="3" indexofinput="2" outputowner="1" indexofoutput="4" />
-                                            <Link inputowner="2" indexofinput="4" outputowner="3" indexofoutput="5" />
                                             <Link inputowner="4" indexofinput="2" outputowner="2" indexofoutput="8" />
                                             <Link inputowner="5" indexofinput="2" outputowner="4" indexofoutput="4" />
                                             <Link inputowner="6" indexofinput="2" outputowner="4" indexofoutput="5" />
@@ -935,6 +1007,9 @@ class MyClass(GeneratedClass):
                                             <Link inputowner="0" indexofinput="3" outputowner="5" indexofoutput="4" />
                                             <Link inputowner="0" indexofinput="4" outputowner="6" indexofoutput="4" />
                                             <Link inputowner="0" indexofinput="5" outputowner="7" indexofoutput="4" />
+                                            <Link inputowner="3" indexofinput="3" outputowner="3" indexofoutput="5" />
+                                            <Link inputowner="8" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="2" indexofinput="4" outputowner="3" indexofoutput="5" />
                                         </Diagram>
                                     </BehaviorKeyframe>
                                 </BehaviorLayer>
